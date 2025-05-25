@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>💼 LinkedIn Poster</title>
+  <style>
+    /* Reset & Base Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f0f2f5;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #0a66c2;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 150px;
+      padding: 12px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      resize: vertical;
+      margin-bottom: 20px;
+    }
+
+    button {
+      background-color: #0a66c2;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0047b2;
+    }
+
+    button:disabled {
+      background-color: #9ec1cf;
+      cursor: not-allowed;
+    }
+
+    #status {
+      margin-top: 20px;
+      font-size: 14px;
+      color: green;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>💼 LinkedIn Poster</h1>
+
+    <textarea id="content" placeholder="Write your LinkedIn post here..."></textarea>
+
+    <div class="btn-group">
+      <button onclick="login()">Login with LinkedIn">Login</button>
+      <button onclick="postToLinkedIn()" id="postBtn">Post to LinkedIn</button>
+    </div>
+
+    <p id="status"></p>
+  </div>
+
+  <script>
+    function login() {
+      window.location.href = "http://localhost:5050/linkedin/login";
+    }
+
+    async function postToLinkedIn() {
+      const content = document.getElementById("content").value.trim();
+      const status = document.getElementById("status");
+      const btn = document.getElementById("postBtn");
+
+      if (!content) {
+        status.textContent = "Please write something before posting.";
+        return;
+      }
+
+      btn.disabled = true;
+      status.textContent = "Posting...";
+
+      try {
+        const res = await fetch("http://localhost:5050/linkedin/post", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ content }),
+          credentials: "include"
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          status.textContent = "✅ Posted successfully!";
+        } else {
+          status.textContent = "❌ Failed: " + (data.error || "Unknown error");
+        }
+      } catch (err) {
+        console.error(err);
+        status.textContent = "🚨 Error: Could not connect to server.";
+      } finally {
+        btn.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>

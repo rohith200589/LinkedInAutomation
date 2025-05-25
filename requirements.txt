@@ -1,0 +1,5 @@
+flask
+requests-oauthlib
+oauthlib
+flask-cors
+python-dotenv
